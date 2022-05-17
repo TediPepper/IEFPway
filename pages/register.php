@@ -1,7 +1,6 @@
 <?php
 
 
-
 require("../database/connectDatabase.php");
 
 ?>
@@ -77,39 +76,48 @@ require("../database/connectDatabase.php");
                         && isset($_POST["form-card-number"])  && isset($_POST["form-card-name"])  && isset($_POST["form-card-csv"])  && isset($_POST["form-card-expiration"])
                         ){
 
+
                             //COMPLETAR -> Dá erro caso a password não seja igual a Confirmação da password  MOSTRAR A MSG
 
-                            /*
+
+                            if($_POST["form-password"]!=$_POST["form-confirm-password"]){?>
+
+
                                 <div class="alert alert-warning" role="alert">
                                     The password and confirm password didn't match
                                 </div>
-                            */
-                            ?>
-                            <?php
 
-                                //Query para inserir o cartao e obter o id desse cartao
-                                $sql = $conn->prepare("INSERT INTO Card(name,csv,card_code,expirationDate) VALUES (?,?,?,?);");
-                                $sql->bind_param("sdss", $_POST["form-card-name"], $_POST["form-card-csv"], $_POST["form-card-number"],$_POST["form-card-expiration"]);
-                                $sql->execute();
-                                $cardId = $conn -> insert_id;
 
-                                //COMPLETAR INSERIR O UTILIZADOR COM O CARD ID
+                            <?php }else{
 
-                                //Se der erro dá esta mensagem
-                                if (mysqli_error($conn)) {
-                                    ?>
-                                    <div class="alert alert-danger" role="alert">
-                                       Error creating user
-                                    </div>
-                                    <?php
-                                }else{
-                                    //se não der erro dá esta mensagem
-                                    ?>
-                                    <div class="alert alert-success" role="alert">
-                                       You are now registered
-                                    </div>
-                                    <?php
-                                }
+                                        //Query para inserir o cartao e obter o id desse cartao
+                                        $sql = $conn->prepare("INSERT INTO card(name,ccv,card_number,expirationDate) VALUES (?,?,?,?); ");
+                                        $sql->bind_param("sdss", $_POST["form-card-name"], $_POST["form-card-csv"], $_POST["form-card-number"],$_POST["form-card-expiration"]);
+                                        $sql->execute();
+                                        $cardId = $conn -> insert_id;//ultimo id inserido na base de dados
+
+                                        //COMPLETAR INSERIR O UTILIZADOR COM O CARD ID
+                                        $sql2 = $conn->prepare("INSERT INTO user(name,email,contact,password, card_id) VALUES (?,?,?,?,?);");
+                                        $sql2->bind_param("sssss", $_POST["form-username"], $_POST["form-email"], $_POST["form-contact"],$_POST["form-password"], $cardId);
+                                        $sql2->execute();
+
+
+                                        //Se der erro dá esta mensagem
+                                        if (mysqli_error($conn)) {
+                                            ?>
+                                            <div class="alert alert-danger" role="alert">
+                                               Error creating user
+                                            </div>
+                                            <?php
+                                        }else{
+                                            //se não der erro dá esta mensagem
+                                            ?>
+                                            <div class="alert alert-success" role="alert">
+                                               You are now registered
+                                            </div>
+                                            <?php
+                                        }
+                            }
 
                         }
 
@@ -152,21 +160,21 @@ require("../database/connectDatabase.php");
                                                 <div class="row">
                                                     <div class="col-xs-12">
                                                         <div class="form-group"> <label>CARD NUMBER</label>
-                                                            <div class="input-group"> <input type="text" class="form-control" placeholder="Valid Card Number" name="form-card-number" required /> <span class="input-group-addon"><span class="fa fa-credit-card"></span></span> </div>
+                                                            <div class="input-group"> <input type="text" class="form-control" placeholder="Valid Card Number" id="form-card-number" name="form-card-number" required /> <span class="input-group-addon"><span class="fa fa-credit-card"></span></span> </div>
                                                         </div>
                                                     </div>
                                                 </div>
                                                 <div class="row">
                                                     <div class="col-xs-7 col-md-7">
-                                                        <div class="form-group"> <label><span class="hidden-xs">EXPIRATION</span><span class="visible-xs-inline">EXP</span> DATE</label> <input type="text" class="form-control" name="form-card-expiration" placeholder="MM / YY" required/> </div>
+                                                        <div class="form-group"> <label><span class="hidden-xs">EXPIRATION</span><span class="visible-xs-inline">EXP</span> DATE</label> <input type="text" class="form-control" id="form-card-expiration" name="form-card-expiration" placeholder="MM / YY" required/> </div>
                                                     </div>
                                                     <div class="col-xs-5 col-md-5 pull-right">
-                                                        <div class="form-group"> <label>CV CODE</label> <input type="text" class="form-control" placeholder="CVC"  name="form-card-csv" required/> </div>
+                                                        <div class="form-group"> <label>CV CODE</label> <input type="text" class="form-control" placeholder="CVC"  id="form-card-csv" name="form-card-csv" required/> </div>
                                                     </div>
                                                 </div>
                                                 <div class="row">
                                                     <div class="col-xs-12">
-                                                        <div class="form-group"> <label>CARD OWNER</label> <input type="text" class="form-control" placeholder="Card Owner Name"  name="form-card-name"  required/> </div>
+                                                        <div class="form-group"> <label>CARD OWNER</label> <input type="text" class="form-control" placeholder="Card Owner Name"  id="form-card-name" name="form-card-name"  required/> </div>
                                                     </div>
                                                 </div>
                                         </div>
