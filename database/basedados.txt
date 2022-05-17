@@ -1,0 +1,48 @@
+DROP DATABASE IF EXISTS IEFPWay;
+
+Create database IEFPWay;
+
+use IEFPWay;
+
+create table Card (
+id int primary key auto_increment,
+name varchar(100) NOT NULL,
+expirationDate varchar(10) NOT NULL,
+ccv int NOT NULL,
+card_number varchar(100) NOT NULL UNIQUE,
+balance double NOT NULL
+);
+
+create table User (
+id int primary key auto_increment,
+name varchar(100) NOT NULL,
+email varchar(100) NOT NULL UNIQUE,
+contact varchar(20) NOT NULL UNIQUE,
+password varchar(100) NOT NULL,
+card_id int
+);
+
+create table Contact (
+id int primary key auto_increment,
+id_user int ,
+id_friend int 
+);
+
+create table Transaction (
+id int primary key auto_increment,
+value double NOT NULL,
+id_contact int ,
+createdAt datetime NOT NULL
+);
+
+alter table User
+add foreign key (card_id) references Card(id) on delete cascade on update cascade;
+
+alter table Contact
+add foreign key (id_user) references User(id) on delete cascade on update cascade;
+
+alter table Contact
+add foreign key (id_friend) references User(id) on delete cascade on update cascade;
+
+alter table Transaction
+add foreign key (id_contact) references Contact(id) on delete cascade on update cascade; 
